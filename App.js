@@ -3,24 +3,36 @@ import Adder from './components/Adder';
 import React from 'react';
 import Todo from './components/Todo';
 import Header from './components/Header'
-import { StyleSheet, Text, View,FlatList } from 'react-native';
+import { StyleSheet, Text, View,FlatList,Alert,TouchableWithoutFeedback,Keyboard } from 'react-native';
 import { useState } from 'react';
 export default function App() {
+
   const handleTouch = (id) =>{
     settodos((prevstate) => {
       return prevstate.filter(todo => todo.key != id);
     })
   }
+
   const adderhandler = (todoo) => {
-      settodos(
-        (todoss) => {
-        return [
-          {text : todoo , key : Math.random().toString()},
-          ...todoss
-        ]
+      if(todoo.length > 3){
+        settodos(
+          (todoss) => {
+          return [
+            {text : todoo , key : Math.random().toString()},
+            ...todoss
+          ]
+        }
+        )
       }
-      )
+      else{
+        Alert.alert('Ohho','todoo less than 3 character', 
+        [
+          {  text : 'got it!!!'}
+        ])
+      }
+   
   }
+
   const [todos, settodos] = useState(
     [
       {text : 'GET UP' ,key : '1'},
@@ -30,22 +42,27 @@ export default function App() {
       {text : 'EXERCISE 15 min' ,key : '5'},
     ]
   )
+
   return (
-    <View style={styles.container}>
-      <Header />
-      <Adder adderhandler = {adderhandler}/>
-      <View style={styles.content}>
-      <View style={styles.list}>
-     <FlatList
-     data = {todos}
-     renderItem = {({item}) =>(
-       <Todo item ={item} handleTouch ={handleTouch}/>
-     )}
-     />
-      
+    <TouchableWithoutFeedback onPress ={()=>{
+      Keyboard.dismiss();
+    }}>
+      <View style={styles.container}>
+        <Header />
+        <Adder adderhandler = {adderhandler}/>
+        <View style={styles.content}>
+        <View style={styles.list}>
+      <FlatList
+      data = {todos}
+      renderItem = {({item}) =>(
+        <Todo item ={item} handleTouch ={handleTouch}/>
+      )}
+      />
+        
+        </View>
+        </View>
       </View>
-      </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -55,9 +72,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   content: {
+    flex: 1,
     padding: 40,
   },
   list:{
+    flex: 1,
     margin: 20,
   }
 });
